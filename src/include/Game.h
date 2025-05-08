@@ -5,10 +5,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-
+#include "World.h"
 
 class Game {
 private:
+
 public:
     Game();
     ~Game();

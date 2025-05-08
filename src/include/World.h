@@ -5,7 +5,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-
+#include "WorldGen.h"
 
 class World {
 private:
