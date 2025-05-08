@@ -3,3 +3,9 @@
 //
 
 #include "include/WorldGen.h"
+
+WorldGen::WorldGen() {
+}
+
+WorldGen::~WorldGen() {
+}

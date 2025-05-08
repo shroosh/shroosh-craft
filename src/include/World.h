@@ -8,7 +8,10 @@
 
 
 class World {
-
+private:
+public:
+    World();
+    ~World();
 };
 
 

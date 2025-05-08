@@ -8,7 +8,10 @@
 
 
 class WorldGen {
-
+private:
+public:
+    WorldGen();
+    ~WorldGen();
 };
 
 
