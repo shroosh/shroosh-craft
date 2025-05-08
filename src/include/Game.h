@@ -9,10 +9,10 @@
 
 class Game {
 private:
-    sf::RenderWindow* window;
+    sf::RenderWindow* p_Window;
     void initWindow();
 
-    sf::View view;
+    sf::View m_View;
     void initView();
 
     void update();
