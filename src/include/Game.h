@@ -14,14 +14,15 @@ private:
 
     sf::View view;
     void initView();
+
+    void update();
+    void updateBaseEvents();
+    void render();
 public:
     Game();
     ~Game();
 
     void run();
-    void update();
-    void updateBaseEvents();
-    void render();
 };
 
 
