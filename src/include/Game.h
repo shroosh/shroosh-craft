@@ -9,10 +9,19 @@
 
 class Game {
 private:
+    sf::RenderWindow* window;
+    void initWindow();
 
+    sf::View view;
+    void initView();
 public:
     Game();
     ~Game();
+
+    void run();
+    void update();
+    void updateBaseEvents();
+    void render();
 };
 
 
