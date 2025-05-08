@@ -17,7 +17,7 @@ public:
     Tile(TileType type, float size);
     ~Tile();
     void changeType(TileType type);
-    void render();
+    void render(sf::RenderTarget* target);
 };
 
 
