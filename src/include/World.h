@@ -6,12 +6,16 @@
 #define WORLD_H
 
 #include "WorldGen.h"
+#include "Tile.h"
 
 class World {
 private:
+    std::vector<std::vector<Tile*>> map;
 public:
     World();
     ~World();
+
+    void render();
 };
 
 

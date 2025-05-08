@@ -10,7 +10,9 @@ add_executable(shroosh_craft src/main.cpp
         src/World.cpp
         src/include/World.h
         src/WorldGen.cpp
-        src/include/WorldGen.h)
+        src/include/WorldGen.h
+        src/Tile.cpp
+        src/include/Tile.h)
 
 find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio Network)
 
