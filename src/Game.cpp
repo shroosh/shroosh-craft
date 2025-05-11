@@ -10,10 +10,14 @@ void Game::initWindow() {
 }
 
 void Game::initView() {
+    m_View.setSize(sf::Vector2f(1920, 1080));
+    m_View.setCenter(sf::Vector2f(0, 132*16));
+    p_Window->setView(m_View);
 }
 
 Game::Game() {
     this->initWindow();
+    this->initView();
 }
 
 Game::~Game() {
@@ -47,6 +51,7 @@ void Game::render() {
     this->p_Window->clear();
 
     //Render here
+    m_World.render(p_Window);
 
     this->p_Window->display();
 }

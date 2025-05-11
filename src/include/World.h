@@ -5,17 +5,27 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "WorldGen.h"
 #include "Tile.h"
 
 class World {
 private:
-    std::vector<std::vector<Tile*>> map;
+    int m_worldWidth;
+    int m_worldHeight;
+    int m_topHeight;
+    int m_bottomHeight;
+    float m_tileSize;
+    void initVariables();
+
+    int generateRandomHeight(int lastHeight);
+
+    std::vector<std::vector<std::vector<Tile*>>> m_Map;
+    void generateBaseLayer();
+
 public:
-    World();
+    World(sf::RenderTarget* window);
     ~World();
 
-    void render();
+    void render(sf::RenderTarget* m_renderTarget);
 };
 
 

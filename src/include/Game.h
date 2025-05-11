@@ -15,6 +15,8 @@ private:
     sf::View m_View;
     void initView();
 
+    World m_World{p_Window};
+
     void update();
     void updateBaseEvents();
     void render();
