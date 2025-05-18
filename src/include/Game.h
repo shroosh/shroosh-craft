@@ -12,11 +12,15 @@ private:
     sf::RenderWindow* p_Window;
     void initWindow();
 
-    sf::View m_View;
+    sf::View view;
     void initView();
+
+    World m_World;
 
     void update();
     void updateBaseEvents();
+    void updateKeyboardEvents();
+
     void render();
 public:
     Game();

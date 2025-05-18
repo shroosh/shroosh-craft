@@ -9,9 +9,16 @@ add_executable(shroosh_craft src/main.cpp
         src/include/Game.h
         src/World.cpp
         src/include/World.h
-        src/WorldGen.cpp
-        src/include/WorldGen.h)
+        src/TileMap.cpp
+        src/include/TileMap.h
+        src/Chunk.cpp
+        src/include/Chunk.h
+        src/include/TileTypes.h
+        src/Player.cpp
+        src/include/Player.h
+        src/include/Vector2iHash.h
+)
 
 find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio Network)
 
-target_link_libraries(shroosh_craft PRIVATE PRIVATE SFML::Graphics SFML::Audio SFML::Network)
+target_link_libraries(shroosh_craft PRIVATE PRIVATE SFML::Graphics SFML::Audio SFML::Network noise)

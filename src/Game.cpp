@@ -10,10 +10,16 @@ void Game::initWindow() {
 }
 
 void Game::initView() {
+    view.setSize(sf::Vector2f(1920.f, 1080.f));
+    view.setCenter(sf::Vector2f(0, 0));
+    view.setViewport(sf::FloatRect({0.f, 0.f}, {1.f, 1.f}));
+    view.zoom(1.f);
+    p_Window->setView(view);
 }
 
 Game::Game() {
     this->initWindow();
+    this->initView();
 }
 
 Game::~Game() {
@@ -29,6 +35,7 @@ void Game::run() {
 
 void Game::update() {
     this->updateBaseEvents();
+    this->updateKeyboardEvents();
 }
 
 void Game::updateBaseEvents() {
@@ -43,10 +50,33 @@ void Game::updateBaseEvents() {
     }
 }
 
+void Game::updateKeyboardEvents() {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+        this->view.move(sf::Vector2f(0.f, -10.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+        this->view.move(sf::Vector2f(-10.f, 0.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        this->view.move(sf::Vector2f(0.f, 10.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+        this->view.move(sf::Vector2f(10.f, 0.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
+        this->view.zoom(1.005);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+        this->view.zoom(0.995);
+    }
+    this->p_Window->setView(this->view);
+}
+
 void Game::render() {
     this->p_Window->clear();
 
     //Render here
+    m_World.render(*this->p_Window);
 
     this->p_Window->display();
 }
