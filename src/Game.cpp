@@ -7,6 +7,10 @@
 void Game::initWindow() {
     this->p_Window = new sf::RenderWindow(sf::VideoMode({1920, 1080}), "ShrooshCraft" ,sf::Style::Titlebar | sf::Style::Close);
     this->p_Window->setFramerateLimit(240);
+
+    view.setSize(sf::Vector2f(1920, 1080));
+    view.setCenter({0,0});
+    p_Window->setView(view);
 }
 
 void Game::initView() {
@@ -29,6 +33,7 @@ void Game::run() {
 
 void Game::update() {
     this->updateBaseEvents();
+    this->updateKeyboardEvents();
 }
 
 void Game::updateBaseEvents() {
@@ -43,10 +48,33 @@ void Game::updateBaseEvents() {
     }
 }
 
+void Game::updateKeyboardEvents() {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+        this->view.move(sf::Vector2f(0.f, -10.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+        this->view.move(sf::Vector2f(-10.f, 0.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        this->view.move(sf::Vector2f(0.f, 10.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+        this->view.move(sf::Vector2f(10.f, 0.f));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
+        this->view.zoom(1.005);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+        this->view.zoom(0.995);
+    }
+    this->p_Window->setView(this->view);
+}
+
 void Game::render() {
     this->p_Window->clear();
 
     //Render here
+    m_World.render(*p_Window);
 
     this->p_Window->display();
 }
