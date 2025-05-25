@@ -6,17 +6,18 @@
 #define WORLDGEN_H
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/System.hpp>
-#include <iostream>
-#include <vector>
-#include <map>
+#include <noise/noise.h>
 
 class WorldGen {
 private:
+    noise::module::Perlin singlePerlin;
+    noise::module::Perlin doublePerlin;
+    void initPerlin();
 public:
     WorldGen();
     ~WorldGen();
+
+    std::vector<int> generateChunk(sf::Vector2i pos);
 };
 
 
