@@ -9,34 +9,52 @@
 #include <iostream>
 
 #include "Tile.h"
-#include "Utils.h"
+#include "Config.h"
+//#include "Utils.h"
 
-static constexpr unsigned short CHUNK_SIZE = 40;
-
+class World;
+class WorldGen;
 class TextureManager;
 
 class Chunk : public sf::Drawable, public sf::Transformable {
 private:
+    //Tiles
     std::vector<Tile> tiles;
-    std::vector<int> &tileData;
+    void updateTileNeighbours();
 
-    sf::VertexArray vertices;
-    sf::RenderStates renderStates;
-    sf::Transform transform;
+    //Variables
+    const sf::Vector2i position;
+    void printPosition();
 
+    //Textures
     TextureManager &textureManager;
     sf::Texture *texture;
 
-    void updateTile(Tile &tile);
-    void setTileNeighbors(Tile &tile);
-    void updateTileTexture(Tile &tile);
-    void setVertices(Tile &tile);
+    //Neighbors
+    Chunk *m_Up = nullptr;
+    Chunk *m_Right = nullptr;
+    Chunk *m_Down = nullptr;
+    Chunk *m_Left = nullptr;
 
-    void load();
+    //Rendering
+    sf::VertexArray m_Vertices;
+    sf::RenderStates m_RenderStates;
+    sf::Transform m_Transform;
+
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 public:
-    explicit Chunk(std::vector<int> &tiles, TextureManager &textureManager);
+    //Constructor and destructor
+    explicit Chunk(sf::Vector2i chunkPos, WorldGen &generator, TextureManager &textureManager);
     ~Chunk();
+
+    //Functions
+    void setChunkNeighbors(World &world);
+    void updateVertices();
+    void updateTextures();
+
+    //Tile functions
+    Tile &getTileAt(sf::Vector2i pos);
+
 };
 
 

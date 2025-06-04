@@ -7,6 +7,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <noise/noise.h>
+#include "Tile.h"
+#include "Config.h"
 
 class WorldGen {
 private:
@@ -17,7 +19,7 @@ public:
     WorldGen();
     ~WorldGen();
 
-    std::vector<int> generateChunk(sf::Vector2i pos);
+    std::vector<Tile> generate(sf::Vector2i pos);
 };
 
 

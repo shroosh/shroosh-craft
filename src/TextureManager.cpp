@@ -77,20 +77,35 @@ int TextureManager::getBitmask(bool up, bool right, bool down, bool left) {
 }
 
 TextureManager::TextureManager() {
-    loadTextures();
-    setUpStandardCoords();
+    this->loadTextures();
+    this->setUpStandardCoords();
 }
 
 TextureManager::~TextureManager() {
 }
 
-sf::Texture & TextureManager::getTexture() {
-    return tileSheet;
+sf::Texture *TextureManager::getTexture() {
+    return &tileSheet;
 }
 
-sf::Vector2f TextureManager::getTextureCoords(TileType type, bool up, bool right, bool down, bool left) {
+sf::Vector2f TextureManager::getTextureCoords(TileType type, Tile &upTile, Tile &rightTile, Tile &downTile, Tile &leftTile) {
     int yLevel = static_cast<int>(type);
-    int bitmask = getBitmask(up, right, down, left);
+
+    bool up, right, down, left;
+    up = right = down = left = false;
+
+    if (upTile.getType() == TileType::AIR)
+        up = true;
+    if (rightTile.getType() == TileType::AIR)
+        right = true;
+    if (downTile.getType() == TileType::AIR)
+        down = true;
+    if (leftTile.getType() == TileType::AIR) {
+        left = true;
+    }
+
+    const int bitmask = getBitmask(up, right, down, left);
+
     sf::Vector2i coords = this->standardCoords.at(bitmask);
     return {static_cast<float>(coords.x), static_cast<float>(coords.y + (yLevel * TILE_SPRITE_SIZE * 4))};
 }

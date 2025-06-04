@@ -6,40 +6,34 @@
 #define TILE_H
 
 #include <SFML/Graphics.hpp>
-
-enum class TileType {
-    AIR = -1, GRASS, DIRT, STONE
-};
-
-constexpr unsigned short TILE_SIZE = 64;
+#include "TileType.h"
+#include "Config.h"
 
 class Tile {
 private:
-    TileType type;
-    sf::Vector2i pos;
+    TileType m_Type;
 
-    bool up;
-    bool right;
-    bool down;
-    bool left;
+    //Neighbors
+    Tile *upTile;
+    Tile *rightTile;
+    Tile *downTile;
+    Tile *leftTile;
 public:
-    Tile(TileType type, sf::Vector2i pos);
+    explicit Tile(TileType type);
     ~Tile();
 
-    void setType(TileType);
-    TileType getType();
+    TileType getType() const;
 
-    sf::Vector2i getPos() const;
 
-    void setUp(bool air);
-    void setRight(bool air);
-    void setDown(bool air);
-    void setLeft(bool air);
+    Tile& up();
+    Tile& right();
+    Tile& down();
+    Tile& left();
 
-    bool getUp();
-    bool getRight();
-    bool getDown();
-    bool getLeft();
+    void up(Tile& neighbor);
+    void right(Tile& neighbor);
+    void down(Tile& neighbor);
+    void left(Tile& neighbor);
 };
 
 

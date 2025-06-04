@@ -4,14 +4,12 @@
 
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
+
 #include <unordered_map>
-#include <SFML/Graphics/Texture.hpp>
-#include "Utils.h"
-
+#include <SFML/Graphics.hpp>
+#include "Config.h"
 #include "Tile.h"
-
-constexpr int TILE_VARIANTS = 15;
-constexpr int TILE_SPRITE_SIZE = 16;
+#include "TileType.h"
 
 class TextureManager {
 private:
@@ -27,9 +25,9 @@ public:
     TextureManager();
     ~TextureManager();
 
-    sf::Texture& getTexture();
+    sf::Texture *getTexture();
 
-    sf::Vector2f getTextureCoords(TileType type, bool up, bool right, bool down, bool left);
+    sf::Vector2f getTextureCoords(TileType type, Tile &upTile, Tile &rightTile, Tile &downTile, Tile &leftTile);
 };
 
 #endif //TEXTUREMANAGER_H

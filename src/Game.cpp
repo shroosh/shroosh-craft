@@ -8,9 +8,9 @@ void Game::initWindow() {
     this->p_Window = new sf::RenderWindow(sf::VideoMode({1920, 1080}), "ShrooshCraft" ,sf::Style::Titlebar | sf::Style::Close);
     this->p_Window->setFramerateLimit(240);
 
-    view.setSize(sf::Vector2f(1920, 1080));
-    view.setCenter({0,0});
-    p_Window->setView(view);
+    this->view.setSize(sf::Vector2f(1920, 1080));
+    this->view.setCenter({0,0});
+    this->p_Window->setView(view);
 }
 
 void Game::initView() {
@@ -74,7 +74,7 @@ void Game::render() {
     this->p_Window->clear();
 
     //Render here
-    m_World.render(*p_Window);
+    this->m_World.render(*p_Window);
 
     this->p_Window->display();
 }

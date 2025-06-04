@@ -1,115 +1,134 @@
 //
 // Created by rasmus on 5/21/25.
 //
-#include "include/TextureManager.h"
 #include "include/Chunk.h"
 
-void Chunk::updateTile(Tile &tile) {
-    this->setVertices(tile);
-    this->setTileNeighbors(tile);
-    this->updateTileTexture(tile);
-}
+#include "include/World.h"
+#include "include/WorldGen.h"
 
-void Chunk::setTileNeighbors(Tile &tile) {
-    sf::Vector2i tilePos = tile.getPos();
-    if (tilePos.y > 0) {
+void Chunk::updateTileNeighbours() {
+    for (int x = 0; x < CHUNK_SIZE; ++x) {
+        for (int y = 0; y < CHUNK_SIZE; ++y) {
+            Tile &tile = tiles[x + y * CHUNK_SIZE];
 
-        if (tiles[Utils::chunkPosToIndex(tilePos.x, tilePos.y - 1)].getType() == TileType::AIR ) {
-            tile.setUp(true);
-
-        } else {
-            tile.setUp(false);
+            //Up
+            tile.up(this->getTileAt({ x, y - 1 }));
+            //Right
+            tile.right(this->getTileAt({ x + 1, y }));
+            //Down
+            tile.down(this->getTileAt({ x, y + 1 }));
+            //Left
+            tile.left(this->getTileAt({ x - 1, y }));
         }
-    } else {
-        tile.setUp(false);
-    }
-
-
-    if (tilePos.y < CHUNK_SIZE - 1) {
-        if (tiles[Utils::chunkPosToIndex(tilePos.x, tilePos.y + 1)].getType() == TileType::AIR ) {
-            tile.setDown(true);
-        } else {
-            tile.setDown(false);
-        }
-    } else {
-        tile.setDown(false);
-    }
-
-    if (tilePos.x < CHUNK_SIZE - 1) {
-        if (tiles[Utils::chunkPosToIndex(tilePos.x + 1, tilePos.y)].getType() == TileType::AIR ) {
-            tile.setRight(true);
-        } else {
-            tile.setRight(false);
-        }
-    } else {
-        tile.setRight(false);
-    }
-
-    if (tilePos.x > 0) {
-        if (tiles[Utils::chunkPosToIndex(tilePos.x - 1, tilePos.y)].getType() == TileType::AIR ) {
-            tile.setLeft(true);
-        } else {
-            tile.setLeft(false);
-        }
-    } else {
-        tile.setLeft(false);
     }
 }
 
-void Chunk::updateTileTexture(Tile &tile) {
-    sf::Vector2i pos = tile.getPos();
-    sf::Vertex* temp = &vertices[(pos.x + pos.y * CHUNK_SIZE) * 6];
-
-    const sf::Vector2f texPos = textureManager.getTextureCoords(tile.getType(), tile.getUp(), tile.getRight(), tile.getDown(), tile.getLeft());
-
-    temp[0].texCoords = sf::Vector2f(texPos.x, texPos.y); // 0, 0
-    temp[1].texCoords = sf::Vector2f(texPos.x + TILE_SPRITE_SIZE, texPos.y); // 1, 0
-    temp[2].texCoords = sf::Vector2f(texPos.x, texPos.y + TILE_SPRITE_SIZE); // 0, 1
-    temp[3].texCoords = sf::Vector2f(texPos.x + TILE_SPRITE_SIZE, texPos.y + TILE_SPRITE_SIZE); // 1, 1
-    temp[4].texCoords = sf::Vector2f(texPos.x + TILE_SPRITE_SIZE, texPos.y); // 1, 0
-    temp[5].texCoords = sf::Vector2f(texPos.x, texPos.y + TILE_SPRITE_SIZE); // 0, 1
-}
-
-void Chunk::setVertices(Tile &tile) {
-    sf::Vector2i pos = tile.getPos();
-    sf::Vertex* temp = &vertices[(pos.x + pos.y * CHUNK_SIZE) * 6];
-
-    temp[0].position = sf::Vector2f(pos.x * TILE_SIZE, pos.y * TILE_SIZE); // 0, 0
-    temp[1].position = sf::Vector2f((pos.x + 1) * TILE_SIZE, pos.y * TILE_SIZE); // 1, 0
-    temp[2].position = sf::Vector2f(pos.x * TILE_SIZE, (pos.y + 1) * TILE_SIZE); // 0, 1
-    temp[3].position = sf::Vector2f((pos.x + 1) * TILE_SIZE, (pos.y + 1) * TILE_SIZE); // 1, 1
-    temp[4].position = sf::Vector2f((pos.x + 1) * TILE_SIZE, pos.y * TILE_SIZE); // 1, 0
-    temp[5].position = sf::Vector2f(pos.x * TILE_SIZE, (pos.y + 1) * TILE_SIZE); // 0, 1
-}
-
-void Chunk::load() {
-    this->tiles.reserve(CHUNK_SIZE * CHUNK_SIZE);
-
-    for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; ++i) {
-        Tile tile = Tile(static_cast<TileType>(this->tileData[i]), Utils::indexToChunkPos(i));
-        this->tiles.emplace_back(tile);
-    }
-
-    for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; ++i) {
-        if (tiles.at(i).getType() != TileType::AIR) {
-            this->updateTile(this->tiles.at(i));
-        }
-    }
+void Chunk::printPosition() {
+    std::cout << position.x << " " << position.y << std::endl;
 }
 
 void Chunk::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     states.transform *= getTransform();
     states.texture = texture;
-
-    target.draw(vertices, states);
+    target.draw(m_Vertices, states);
 }
 
-Chunk::Chunk(std::vector<int> &tiles, TextureManager &textureManager): tileData(tiles), textureManager(textureManager) {
-    this->vertices.resize(CHUNK_SIZE*CHUNK_SIZE*6);
-    this->vertices.setPrimitiveType(sf::PrimitiveType::Triangles);
-    this->texture = &textureManager.getTexture();
-    this->load();
+Chunk::Chunk(const sf::Vector2i chunkPos, WorldGen &generator, TextureManager &textureManager) : position(chunkPos), textureManager(textureManager){
+    this->tiles = generator.generate(chunkPos);
+    this->m_Vertices.setPrimitiveType(sf::PrimitiveType::Triangles);
+    this->m_Vertices.resize(CHUNK_SIZE * CHUNK_SIZE * 6);
 }
 
 Chunk::~Chunk() {
+    for (auto it = tiles.begin(); it != tiles.end(); it++) {
+        tiles.erase(it);
+    }
+}
+
+void Chunk::setChunkNeighbors(World &world) {
+    //Set neighbors
+    this->m_Up = world.getChunk(this->position + sf::Vector2i(0, -1));
+    this->m_Left = world.getChunk(this->position + sf::Vector2i(-1, 0));
+    this->m_Down = world.getChunk(this->position + sf::Vector2i(0, 1));
+    this->m_Right = world.getChunk(this->position + sf::Vector2i(1, 0));
+
+    //Update tile neighbors
+    this->updateTileNeighbours();
+
+}
+
+void Chunk::updateVertices() {
+    for (int x = 0; x < CHUNK_SIZE; ++x) {
+        for (int y = 0; y < CHUNK_SIZE; ++y) {
+            if (tiles[x + y * CHUNK_SIZE].getType() != TileType::AIR) {
+                sf::Vertex* vertex = &m_Vertices[(y * CHUNK_SIZE + x) * 6];
+
+                vertex[0].position = {static_cast<float>(x * TILE_SIZE), static_cast<float>(y * TILE_SIZE)}; //0, 0
+                vertex[1].position = {static_cast<float>((x + 1) * TILE_SIZE), static_cast<float>(y * TILE_SIZE)}; //1, 0
+                vertex[2].position = {static_cast<float>(x * TILE_SIZE), static_cast<float>((y + 1) * TILE_SIZE)}; //0, 1
+                vertex[3].position = {static_cast<float>((x + 1) * TILE_SIZE), static_cast<float>((y + 1) * TILE_SIZE)}; //1, 1
+                vertex[4].position = {static_cast<float>(x * TILE_SIZE), static_cast<float>((y + 1) * TILE_SIZE)}; //0, 1
+                vertex[5].position = {static_cast<float>((x + 1) * TILE_SIZE), static_cast<float>(y * TILE_SIZE)}; //1, 0
+            }
+        }
+    }
+}
+
+void Chunk::updateTextures() {
+    //Load texture
+    if (!texture) {
+        texture = this->textureManager.getTexture();
+        this->m_RenderStates.texture = texture;
+    }
+
+    //Apply the right texture for each tile
+    // for (int x = 0; x < CHUNK_SIZE; ++x) {
+    //     for (int y = 0; y < CHUNK_SIZE; ++y) {
+    //         if (tiles[x + y * CHUNK_SIZE].getType() != TileType::AIR) {
+    //             sf::Vertex* vertex = &m_Vertices[(y * CHUNK_SIZE + x) * 6];
+    //             sf::Vector2f textureCoordinate = textureManager.getTextureCoords(TileType::DIRT, tiles[0], tiles[0], tiles[0], tiles[0]);
+    //
+    //             vertex[0].texCoords = textureCoordinate; //0, 0
+    //             vertex[1].texCoords = {textureCoordinate.x + TILE_SPRITE_SIZE, textureCoordinate.y}; //1, 0
+    //             vertex[2].texCoords = {textureCoordinate.x, textureCoordinate.y + TILE_SPRITE_SIZE}; //0, 1
+    //             vertex[3].texCoords = {textureCoordinate.x + TILE_SPRITE_SIZE, textureCoordinate.y + TILE_SPRITE_SIZE}; //1,1
+    //             vertex[4].texCoords = {textureCoordinate.x, textureCoordinate.y + TILE_SPRITE_SIZE}; //0, 1
+    //             vertex[5].texCoords = {textureCoordinate.x + TILE_SPRITE_SIZE, textureCoordinate.y}; //1, 0
+    //         }
+    //     }
+    // }
+
+    for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; ++i) {
+        sf::Vertex* vertex = &m_Vertices[i * 6];
+        sf::Vector2f textureCoordinate = textureManager.getTextureCoords(tiles[i].getType(), tiles[i].up(), tiles[i].right(), tiles[i].down(), tiles[i].left());
+
+        vertex[0].texCoords = textureCoordinate; //0, 0
+        vertex[1].texCoords = {textureCoordinate.x + TILE_SPRITE_SIZE, textureCoordinate.y}; //1, 0
+        vertex[2].texCoords = {textureCoordinate.x, textureCoordinate.y + TILE_SPRITE_SIZE}; //0, 1
+        vertex[3].texCoords = {textureCoordinate.x + TILE_SPRITE_SIZE, textureCoordinate.y + TILE_SPRITE_SIZE}; //1,1
+        vertex[4].texCoords = {textureCoordinate.x, textureCoordinate.y + TILE_SPRITE_SIZE}; //0, 1
+        vertex[5].texCoords = {textureCoordinate.x + TILE_SPRITE_SIZE, textureCoordinate.y}; //1, 0
+    }
+}
+
+Tile & Chunk::getTileAt(sf::Vector2i pos) {
+    //Check if tile is inside this chunk
+    if (pos.x >= 0 && pos.x < CHUNK_SIZE && pos.y >= 0 && pos.y < CHUNK_SIZE) {
+        return tiles[pos.x + pos.y * CHUNK_SIZE];
+    }
+
+    //Request the tile from a neighbor
+    if (pos.x < 0) {
+        return m_Left->getTileAt(pos + sf::Vector2i(CHUNK_SIZE, 0));
+    }
+    if (pos.x >= CHUNK_SIZE) {
+        return m_Right->getTileAt(pos - sf::Vector2i(CHUNK_SIZE, 0));
+    }
+    if (pos.y < 0) {
+        return m_Up->getTileAt(pos + sf::Vector2i(0, CHUNK_SIZE));
+    }
+    if (pos.y >= CHUNK_SIZE) {
+        return m_Down->getTileAt(pos - sf::Vector2i(0, CHUNK_SIZE));
+    }
+
 }

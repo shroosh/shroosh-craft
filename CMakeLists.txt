@@ -21,6 +21,8 @@ add_executable(shroosh_craft src/main.cpp
         src/include/TextureManager.h
         src/Player.cpp
         src/include/Player.h
+        src/include/Config.h
+        src/include/TileType.h
 )
 
 find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio Network)

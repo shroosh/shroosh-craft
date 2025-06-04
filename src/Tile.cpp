@@ -4,52 +4,44 @@
 
 #include "include/Tile.h"
 
-Tile::Tile(TileType type, sf::Vector2i pos) : type(type), pos(pos) {
-    //this->up = this->down = this->left = this->right = false;
+Tile::Tile(const TileType type) : m_Type(type) {
 }
 
 Tile::~Tile() {
 }
 
-void Tile::setType(TileType) {
+TileType Tile::getType() const {
+    return m_Type;
 }
 
-TileType Tile::getType() {
-    return type;
+Tile & Tile::up() {
+    return *upTile;
 }
 
-sf::Vector2i Tile::getPos() const {
-    return pos;
+Tile & Tile::right() {
+    return *rightTile;
 }
 
-void Tile::setUp(bool air) {
-    up = air;
+Tile & Tile::down() {
+    return *downTile;
 }
 
-void Tile::setRight(bool air) {
-    right = air;
+Tile & Tile::left() {
+    return *leftTile;
 }
 
-void Tile::setDown(bool air) {
-    down = air;
+void Tile::up(Tile &neighbor) {
+    this->upTile = &neighbor;
 }
 
-void Tile::setLeft(bool air) {
-    left = air;
+void Tile::right(Tile &neighbor) {
+    this->rightTile = &neighbor;
 }
 
-bool Tile::getUp() {
-    return up;
+void Tile::down(Tile &neighbor) {
+    this->downTile = &neighbor;
 }
 
-bool Tile::getRight() {
-    return right;
-}
-
-bool Tile::getDown() {
-    return down;
-}
-
-bool Tile::getLeft() {
-    return left;
+void Tile::left(Tile &neighbor) {
+    this->leftTile = &neighbor;
 }

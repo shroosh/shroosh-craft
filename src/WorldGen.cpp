@@ -4,7 +4,7 @@
 
 #include "include/WorldGen.h"
 
-#include "include/Chunk.h"
+#include <iostream>
 
 void WorldGen::initPerlin() {
     this->singlePerlin.SetFrequency(0.1);
@@ -29,61 +29,40 @@ WorldGen::WorldGen() {
 WorldGen::~WorldGen() {
 }
 
-std::vector<int> WorldGen::generateChunk(sf::Vector2i pos) {
-    std::vector<int> chunk;
-    chunk.resize(CHUNK_SIZE * CHUNK_SIZE, static_cast<int>(TileType::AIR));
+std::vector<Tile> WorldGen::generate(sf::Vector2i pos) {
+    std::vector<Tile> tiles;
+    tiles.resize(CHUNK_SIZE * CHUNK_SIZE, Tile(TileType::AIR));
+    int startX = pos.x * CHUNK_SIZE;
+    int startY = pos.y * CHUNK_SIZE;
 
-    //AIR CHUNK
-    if (pos.y == 0) {
-        return chunk;
-    }
-
-    int startingX = pos.x * CHUNK_SIZE;
-    int startingY = pos.y * CHUNK_SIZE;
-
-    //GROUND CHUNK
     if (pos.y == 1) {
         for (int x = 0; x < CHUNK_SIZE; x++) {
-            double noise = this->singlePerlin.GetValue(0.2 * (x + startingX), 0.0, 0.0);
-            int groundLevel = static_cast<int>((noise + 1) * CHUNK_SIZE / 2);
-            chunk[Utils::chunkPosToIndex(x, groundLevel)] = static_cast<int>(TileType::GRASS);
-            for (int y = groundLevel + 1; y < CHUNK_SIZE; y++) {
-                chunk[Utils::chunkPosToIndex(x, y)] = static_cast<int>(TileType::DIRT);
+            const double groundLevelNoise = this->singlePerlin.GetValue(0.2 * (x + startX), 0.0, 0.0);
+            const double stoneLevelNoise = this->singlePerlin.GetValue(0.2 * (x + startX), 0.0, 0.0);
+            const int groundLevel = static_cast<int>((groundLevelNoise + 1) * (CHUNK_SIZE) / 2);
+            const int stoneLevel = CHUNK_SIZE - 1 - static_cast<int>((stoneLevelNoise + 1) * (groundLevel) / 2);
+
+            //Air
+            for (int y = 0; y < groundLevel; y++) {
+                const Tile air(TileType::AIR);
+                tiles[x + CHUNK_SIZE * y] = air;
             }
-            noise = this->singlePerlin.GetValue(0.2 * (x + startingX + 7123), 0.0, 0.0);
-            int stoneLevel = static_cast<int>(30 + (noise + 1) * 10 / 2);
+            tiles[x + groundLevel * CHUNK_SIZE] = Tile(TileType::GRASS);
+            for (int y = groundLevel + 1; y < stoneLevel; y++) {
+                const Tile dirt(TileType::DIRT);
+                tiles[x + CHUNK_SIZE * y] = dirt;
+            }
             for (int y = stoneLevel; y < CHUNK_SIZE; y++) {
-                chunk[Utils::chunkPosToIndex(x, y)] = static_cast<int>(TileType::STONE);
+                const Tile stone(TileType::STONE);
+                tiles[x + CHUNK_SIZE * y] = stone;
             }
         }
-
-        return chunk;
-    }
-
-    if (pos.y == 2) {
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int y = 0; y < CHUNK_SIZE; y++) {
-                double noise = doublePerlin.GetValue(0.1 * (x + startingX), 0.3 * (y + startingY), 0.0);
-                if (noise  < 0.3 + 5.f/y) {
-                    chunk[Utils::chunkPosToIndex(x, y)] = static_cast<int>(TileType::STONE);
-                }
-                //chunk[Utils::chunkPosToIndex(x, y)] = static_cast<int>(TileType::STONE);
-            }
+    } else {
+        for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
+            Tile tile(TileType::AIR);
+            tiles.push_back(tile);
         }
-        return chunk;
     }
 
-    if (pos.y > 2) {
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int y = 0; y < CHUNK_SIZE; y++) {
-                double noise = doublePerlin.GetValue(0.1 * (x + startingX), 0.3 * (y + startingY), 0.0);
-                if (noise < 0.3) {
-                    chunk[Utils::chunkPosToIndex(x, y)] = static_cast<int>(TileType::STONE);
-                }
-                //chunk[Utils::chunkPosToIndex(x, y)] = static_cast<int>(TileType::STONE);
-            }
-        }
-        return chunk;
-    }
-
+    return tiles;
 }

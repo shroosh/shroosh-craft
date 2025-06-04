@@ -12,8 +12,7 @@
 
 class World {
 private:
-    std::unordered_map<sf::Vector2i, std::vector<int>, Utils::Vector2iHash> chunkData;
-    std::unordered_map<sf::Vector2i, Chunk, Utils::Vector2iHash> chunks;
+    std::unordered_map<sf::Vector2i, std::unique_ptr<Chunk>, Utils::Vector2iHash> chunks;
 
     void newChunk(sf::Vector2i chunkPos);
     TextureManager textureManager;
@@ -23,6 +22,8 @@ public:
     ~World();
 
     void render(sf::RenderWindow &window);
+
+    Chunk* getChunk(sf::Vector2i chunkPos);
 };
 
 
